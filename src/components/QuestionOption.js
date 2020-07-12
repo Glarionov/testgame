@@ -20,9 +20,7 @@ class QuestionOption extends React.Component {
                       onClick={this.changeHandler}
                       data-key={this.props.index}
         >
-            {this.props.optionData.extraClass}
             {this.props.optionData.text}
-            index={this.props.index}
         </div>)
     }
 }
