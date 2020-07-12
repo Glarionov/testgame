@@ -43,7 +43,9 @@ class Questions extends React.Component {
 
 
         this.state = {score: 0, currentQuestionIndex: 0, questions, currentQuestion: questions[0],
-            lastQuestion: false, showingResult: false, maxScore: questions.length * this.data.goodAnswerScoreChange};
+            lastQuestion: false, showingResult: false, maxScore: questions.length * this.data.goodAnswerScoreChange,
+            clickedOptions: [[]]
+        };
 
         this.computed = {
             lastQuestion: () => {
@@ -53,26 +55,66 @@ class Questions extends React.Component {
             }
         }
 
+        this.state.questions[0].clickedOptions = [];
+
     }
 
-    changeScore(goodAnswer) {
+    changeScore(goodAnswer, id) {
+        console.log('goodAnswer', goodAnswer)
         let changer = goodAnswer? this.data.goodAnswerScoreChange: this.data.badAnswerScoreChange;
+        //
+
+        let cc = this.state.currentQuestion;
+
+
+
+        if (typeof cc.clickedOptions === "undefined") {
+            cc.clickedOptions = [];
+        }
+
+        cc.clickedOptions.push(id);
+        // this.state.currentQuestion.clickedOptions.push(1);
+        //
         this.setState({
             score: this.state.score + changer
         })
+        //
+
+
+        this.setState(prevState => ({
+            // questionData: qd,
+            // clickedOptions:  [...prevState.clickedOptions, 2]
+            currentQuestion:  cc
+        }));
     }
 
-    changeQuestion(indexChange) {
-        console.log('===', indexChange)
+    changeQuestion(indexChange, relativeChange = true) {
+        console.log('indexChange',indexChange); //todo r
+        console.log('relativeChange',relativeChange); //todo r
+
         let currentIndex = this.state.currentQuestionIndex;
-        currentIndex +=indexChange;
+        if (relativeChange) {
+            currentIndex +=indexChange;
+        } else {
+            currentIndex =indexChange;
+        }
+
+        this.state.questions[currentIndex].clickedOptions = [];
+        console.log('this.state.questions[currentIndex]',this.state.questions[currentIndex]); //todo r
+        let newQuestion = this.state.questions[currentIndex];
+        console.log('newQuestion',newQuestion); //todo r
+
+        this.setState({
+            currentQuestion: this.state.questions[currentIndex],
+        })
+
         this.setState({
             currentQuestionIndex: currentIndex,
-            currentQuestion: this.state.questions[currentIndex]
         })
         this.computed.lastQuestion();
-        console.log(this.state.currentQuestionIndex)
-        console.log(this.state.currentQuestion)
+        console.log('currentIndex',currentIndex); //todo r
+        console.log('this.state.currentQuestion',this.state.currentQuestion); //todo r
+
     }
 
     openTestResult() {
@@ -82,10 +124,14 @@ class Questions extends React.Component {
     }
 
     startTestAgain() {
+
+        this.changeQuestion(0, false);
+
         this.setState({
-            showingResult: false
+            showingResult: false,
+            clickedOptions: [[]],
+            score: 0
         });
-        this.changeQuestion(0);
     }
 
     render() {
@@ -104,10 +150,14 @@ class Questions extends React.Component {
             </div> );
         } else {
             return  (<div className="questions">
+                <div>
+                th22222222is.state.currentQuestion.clickedOptions={JSON.stringify(this.state.currentQuestion.clickedOptions)}
+                </div>
                 score: {this.state.score}
                 <SingleQuestion questionData={this.state.currentQuestion}
                                 key={this.state.currentQuestionIndex}
                                 changeScore={this.changeScore.bind(this)}
+                                clickedOptions={typeof this.state.currentQuestion.clickedOptions == "undefined"?[]: this.state.currentQuestion.clickedOptions}
                 />
 
                 this.currentQuestionIndex={this.state.currentQuestionIndex}

@@ -7,8 +7,13 @@ class SingleQuestion extends React.Component {
 
         console.log(this.state.clickedOptions
         )
-        if (this.state.clickedOptions.includes(id)) {
+
+        console.log('this.props.questionData.clickedOptions', this.props.questionData.clickedOptions)
+        if (this.props.questionData.clickedOptions.includes(id)) {
+            console.log('includes')
             return true;
+        } else {
+            console.log('not includes')
         }
 
         let qd = this.state.questionData;
@@ -18,10 +23,10 @@ class SingleQuestion extends React.Component {
 
         if (this.props.questionData.answers.includes(id)) {
             qd.options[id].extraClass = "good";
-            this.props.changeScore(true);
+            this.props.changeScore(true, id);
         } else {
             qd.options[id].extraClass = "bad";
-            this.props.changeScore();
+            this.props.changeScore(false, id);
         }
 
 
@@ -29,14 +34,16 @@ class SingleQuestion extends React.Component {
         // qd.options[parseInt(id)].extraClass;
 
 
+        // this.state.clickedOptions.push(id)
         this.setState(prevState => ({
             questionData: qd,
-            clickedOptions:  [...prevState.clickedOptions, id]
+            // clickedOptions:  [...prevState.clickedOptions, id]
         }));
 
 
 
         console.log(this.props.questionData.options[parseInt(id)].extraClass);
+        // this.props.changeScore(5);
     }
 
     t2() {
@@ -45,11 +52,30 @@ class SingleQuestion extends React.Component {
 
     constructor(props) {
         super(props);
+
+        let qd = this.props.questionData;
+        // qd.options[0].extraClass = "";
+        // qd.options[1].extraClass = "";
+
+        for (let i in qd.options) {
+            qd.options[i].extraClass = '';
+        }
+
+        // qd.options.map( (e) => {
+        //     e.extraClass = "";
+        // });
         this.state = {
             questionData: this.props.questionData,
+            // clickedOptions: this.props.clickedOptions
             clickedOptions: []
         }
     }
+
+    componentWillReceiveProps(nextProps) {
+        console.log('nextProps', nextProps)
+        this.setState({ clickedOptions: this.props.clickedOptions })
+    }
+
 
     componentDidMount() {
 
@@ -58,6 +84,13 @@ class SingleQuestion extends React.Component {
 
     render() {
         return  (<div className="single-question">
+            <div key={this.state.clickedOptions}>
+                this.props.questionData.clickedOptions = {JSON.stringify(this.props.questionData.clickedOptions)}
+            </div>
+
+            <div>
+                this.state.questionData={JSON.stringify(this.state.questionData)}
+            </div>
             <div className="question-name">
                 {this.state.questionData.name}
             </div>
